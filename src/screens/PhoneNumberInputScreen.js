@@ -17,7 +17,7 @@ const PhoneNumberInputScreen = () => {
                     onRequestClose={() => {setShowModal({ showModal: false })}}
                 >
                     <WebView
-                        source={{ uri: 'http://a94194c4.ngrok.io/Captcha.html' }}
+                        source={{ uri: 'http://2865b0a1.ngrok.io/Captcha.html' }}
                         onNavigationStateChange={data =>
                             _handleResponse({data, phoneNumber})
                         }

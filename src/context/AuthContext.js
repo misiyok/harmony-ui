@@ -3,9 +3,21 @@ import createDataContext from './createDataContext';
 
 import firebase from 'firebase/app';
 import 'firebase/auth';
-import 'firebase/database';
 
 import { navigate } from '../navigationRef';
+
+const config = {
+    apiKey: 'AIzaSyDj8jmgUPEJ7ljX6Jzst6pQ6irhrE5jLV4',
+    authDomain: 'harmony-aa3a1.firebaseapp.com',
+    databaseURL: 'https://harmony-aa3a1.firebaseio.com',
+    projectId: 'harmony-aa3a1',
+    storageBucket: 'harmony-aa3a1.appspot.com',
+    messagingSenderId: '415084951399',
+    appId: '1:415084951399:web:da900f53fae3501b8de1c2',
+    measurementId: 'G-LH4HKHRKW0'
+  };
+  
+firebase.initializeApp(config);
 
 const authReducer = (state, action) => {
     switch(action.type) {
@@ -16,9 +28,14 @@ const authReducer = (state, action) => {
         case 'set_error_message':
             return { ...state, errorMessage: action.payload};
         case 'signin':
+            state.isNewUser ? navigate('DummyProfileCreate') : navigate('Match');
+            // instead doing this, we can check the sign in time and account creation time equality
+            // to decide if its a new user inside tryLocalSignin function
             return { ...state, userId: action.payload };
         case 'signout':
             return { ...state, userId: null };
+        case 'set_isNewUser':
+            return { ...state, isNewUser: action.payload };
         default:
             return state;
     }
@@ -28,7 +45,6 @@ const tryLocalSignin = dispatch => () => {
     firebase.auth().onAuthStateChanged(user => {
         if(user) {
             dispatch({ type: 'signin', payload: user.userId });
-            navigate('Match');
         } else {
             navigate('Landing');
         }
@@ -67,12 +83,6 @@ const setErrorMessage = dispatch => {
     };
 };
 
-const signin = dispatch => {
-    return ({ userId }) => {
-        dispatch({ type: 'signin', payload: userId });
-    };
-};
-
 const signout = dispatch => {
     return () => {
         firebase.auth().signOut();
@@ -98,8 +108,14 @@ _sendConfirmationCode = (dispatch, captchaToken, phoneNumber) => {
     });
 }
 
+const setIsNewUser = dispatch => {
+    return ({ isNewUser }) => {
+        dispatch({ type: 'set_isNewUser', payload: isNewUser });
+    };
+};
+
 export const { Provider, Context } = createDataContext(
     authReducer,
-    {sendCode, _handleResponse, setErrorMessage, tryLocalSignin, signout, signin},
-    { errorMessage: null, showModal: false, confirmation: {}, userId: null }
+    {sendCode, _handleResponse, setErrorMessage, tryLocalSignin, signout, setIsNewUser},
+    { errorMessage: null, showModal: false, confirmation: {}, userId: null, isNewUser: false }
 );
