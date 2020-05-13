@@ -5,24 +5,24 @@ import { Context as ProfileContext } from '../context/ProfileContext';
 
 import Spacer from '../components/Spacer';
 
-const FirstNameInputScreen = () => {
-    const { _setFirstName } = useContext(ProfileContext);
-    const [firstName, setFirstName] = useState('');
+const BirthdayInputScreen = ({ navigation }) => {
+    const { _setBirthday } = useContext(ProfileContext);
+    const [birthday, setBirthday] = useState('');
 
     return (
         <View style={styles.container}>
             <Spacer>
-                <Text h3>My first name is</Text>
+                <Text h3>My birthday is</Text>
             </Spacer>
             <Spacer>
                 <Input 
-                    value={firstName} 
-                    onChangeText={setFirstName}
+                    value={birthday} 
+                    onChangeText={setBirthday}
                     autoCorrect={false}
                 />
             </Spacer>
             <Spacer>
-                <Button title="CONTINUE" onPress={() => _setFirstName(firstName)}/>
+                <Button title="CONTINUE" onPress={() => _setBirthday(birthday)}/>
             </Spacer>
         </View>
     );
@@ -34,4 +34,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default FirstNameInputScreen;
+export default BirthdayInputScreen;

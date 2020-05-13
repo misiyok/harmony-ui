@@ -11,6 +11,8 @@ const LandingScreen = ({ navigation }) => {
         tryLocalSignin();
     }, []);
 
+    console.log('landing screen loading...');
+
     return (
         <View style={styles.container} >
             <Spacer>

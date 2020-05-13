@@ -6,7 +6,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 import Spacer from '../components/Spacer';
 
 const PhoneNumberInputScreen = () => {
-    const {state, sendCode, _handleResponse} = useContext(AuthContext);
+    const {state, sendCode, _handleResponse, setShowModal} = useContext(AuthContext);
     const [phoneNumber, setPhoneNumber] = useState('');
 
     renderCaptchScreen = () => {
@@ -17,7 +17,7 @@ const PhoneNumberInputScreen = () => {
                     onRequestClose={() => {setShowModal({ showModal: false })}}
                 >
                     <WebView
-                        source={{ uri: 'http://2865b0a1.ngrok.io/Captcha.html' }}
+                        source={{ uri: 'http://64c98946.ngrok.io/Captcha.html' }}
                         onNavigationStateChange={data =>
                             _handleResponse({data, phoneNumber})
                         }

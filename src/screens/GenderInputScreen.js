@@ -5,24 +5,24 @@ import { Context as ProfileContext } from '../context/ProfileContext';
 
 import Spacer from '../components/Spacer';
 
-const FirstNameInputScreen = () => {
-    const { _setFirstName } = useContext(ProfileContext);
-    const [firstName, setFirstName] = useState('');
+const GenderInputScreen = () => {
+    const { _setGender } = useContext(ProfileContext);
+    const [gender, setGender] = useState('');
 
     return (
         <View style={styles.container}>
             <Spacer>
-                <Text h3>My first name is</Text>
+                <Text h3>I am a</Text>
             </Spacer>
             <Spacer>
                 <Input 
-                    value={firstName} 
-                    onChangeText={setFirstName}
+                    value={gender} 
+                    onChangeText={setGender}
                     autoCorrect={false}
                 />
             </Spacer>
             <Spacer>
-                <Button title="CONTINUE" onPress={() => _setFirstName(firstName)}/>
+                <Button title="CONTINUE" onPress={() => _setGender(gender)}/>
             </Spacer>
         </View>
     );
@@ -34,4 +34,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default FirstNameInputScreen;
+export default GenderInputScreen;

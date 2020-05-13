@@ -28,7 +28,7 @@ const authReducer = (state, action) => {
         case 'set_error_message':
             return { ...state, errorMessage: action.payload};
         case 'signin':
-            state.isNewUser ? navigate('DummyProfileCreate') : navigate('Match');
+            state.isNewUser ? navigate('profileCreationFlow') : navigate('Match');
             // instead doing this, we can check the sign in time and account creation time equality
             // to decide if its a new user inside tryLocalSignin function
             return { ...state, userId: action.payload };
@@ -42,11 +42,15 @@ const authReducer = (state, action) => {
 };
 
 const tryLocalSignin = dispatch => () => {
+    console.log('trying local signin...');
     firebase.auth().onAuthStateChanged(user => {
         if(user) {
+            console.warn('user: ', user);
+            console.log('user: ', user);
             dispatch({ type: 'signin', payload: user.userId });
         } else {
             navigate('Landing');
+            console.log('navigating to landing screen...');
         }
     });
 };
@@ -83,6 +87,12 @@ const setErrorMessage = dispatch => {
     };
 };
 
+const setShowModal = dispatch => {
+    return ({ showModal }) => {
+        dispatch({ type: 'set_show_modal', payload: showModal });
+    };
+};
+
 const signout = dispatch => {
     return () => {
         firebase.auth().signOut();
@@ -116,6 +126,6 @@ const setIsNewUser = dispatch => {
 
 export const { Provider, Context } = createDataContext(
     authReducer,
-    {sendCode, _handleResponse, setErrorMessage, tryLocalSignin, signout, setIsNewUser},
+    {sendCode, _handleResponse, setErrorMessage, setShowModal, tryLocalSignin, signout, setIsNewUser},
     { errorMessage: null, showModal: false, confirmation: {}, userId: null, isNewUser: false }
 );
