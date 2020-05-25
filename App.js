@@ -22,7 +22,7 @@ import { Provider as AuthProvider } from './src/context/AuthContext';
 import { setNavigator } from './src/navigationRef';
 
 const switchNavigator = createSwitchNavigator({
-  phoneNumberFlow: createStackNavigator({
+  loginFlow: createStackNavigator({
     Landing: LandingScreen,
     PhoneNumberInput: PhoneNumberInputScreen,
     CodeVerification: CodeVerificationScreen

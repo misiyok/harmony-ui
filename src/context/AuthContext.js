@@ -28,31 +28,26 @@ const authReducer = (state, action) => {
         case 'set_error_message':
             return { ...state, errorMessage: action.payload};
         case 'signin':
-            state.isNewUser ? navigate('profileCreationFlow') : navigate('Match');
-            // instead doing this, we can check the sign in time and account creation time equality
-            // to decide if its a new user inside tryLocalSignin function
             return { ...state, userId: action.payload };
         case 'signout':
-            return { ...state, userId: null };
+            return { ...state, userId: null, counter: state.counter + 1 };
         case 'set_isNewUser':
             return { ...state, isNewUser: action.payload };
+        case 'set_initializing':
+            return { ...state, initializing: action.payload };
         default:
             return state;
     }
 };
 
 const tryLocalSignin = dispatch => () => {
-    console.log('trying local signin...');
-    firebase.auth().onAuthStateChanged(user => {
+    const subscriber = firebase.auth().onAuthStateChanged(user => {
         if(user) {
-            console.warn('user: ', user);
-            console.log('user: ', user);
-            dispatch({ type: 'signin', payload: user.userId });
-        } else {
-            navigate('Landing');
-            console.log('navigating to landing screen...');
+            dispatch({ type: 'signin', payload: user.uid });
         }
+        dispatch({ type: 'set_initializing', payload: false });
     });
+    return subscriber;
 };
 
 validatePhoneNumber = (phoneNumber) => {
@@ -127,5 +122,5 @@ const setIsNewUser = dispatch => {
 export const { Provider, Context } = createDataContext(
     authReducer,
     {sendCode, _handleResponse, setErrorMessage, setShowModal, tryLocalSignin, signout, setIsNewUser},
-    { errorMessage: null, showModal: false, confirmation: {}, userId: null, isNewUser: false }
+    { errorMessage: null, showModal: false, confirmation: {}, userId: null, isNewUser: false, initializing: true }
 );

@@ -30,6 +30,10 @@ const CodeVerificationScreen = ({ navigation }) => {
                     state.confirmation.confirm(verificationCode)
                     .then((userCredential) => {
                         setIsNewUser({ isNewUser: userCredential.additionalUserInfo.isNewUser });
+                        // if (userCredential.additionalUserInfo.isNewUser)
+                        //     navigation.navigate('FirstNameInput');
+                        // else
+                        //     navigation.navigate('Match');
                     })
                     .catch((err) => {
                         setErrorMessage({ errorMessage: 'Confirmation Error: ', err }); 
