@@ -3,25 +3,12 @@ import createDataContext from './createDataContext';
 
 import { navigate } from '../navigationRef';
 
-import firebase from 'firebase';
-import 'firebase/firestore';
-
-import {decode, encode} from 'base-64';
-
-global.crypto = require("@firebase/firestore");
-global.crypto.getRandomValues = byteArray => { 
-  for (let i = 0; i < byteArray.length; i++) {
-    byteArray[i] = Math.floor(256 * Math.random());
-  } 
-}
-
-if (!global.btoa) {  global.btoa = encode }
-if (!global.atob) { global.atob = decode }
-
-const db = firebase.firestore();
+import { do_fetchSkills, do_persistProfile, do_persistEditedProfile, do_fetchPotentialMatches } from '../firebase';
 
 const profileReducer = (state, action) => {
     switch(action.type) {
+        case 'set_user_id':
+            return { ...state, userId: action.payload};
         case 'set_first_name':
             return { ...state, firstName: action.payload};
         case 'set_birthday':
@@ -34,9 +21,21 @@ const profileReducer = (state, action) => {
             return { ...state, wishes: [...state.wishes, ...action.payload]};
         case 'add_allSkills':
             return { ...state, allSkills: [...action.payload]};
+        case 'edit_skills':
+            return { ...state, skills: [...action.payload]};
+        case 'edit_wishes':
+            return { ...state, wishes: [...action.payload]};
+        case 'add_potentialMatches':
+            return { ...state, potentialMatches: [...action.payload]};
         default:
             return state;
     }
+};
+
+const _setUserId = dispatch => {
+    return ( userId ) => {
+        dispatch({ type: 'set_user_id', payload: userId });
+    };
 };
 
 const _setFirstName = dispatch => {
@@ -70,31 +69,57 @@ const _addSkills = dispatch => {
 const _addWishes = dispatch => {
     return ( wishes ) => {
         dispatch({ type: 'add_wishes', payload: wishes });
-        navigate('Profile');
+        navigate('Match');
     };
 };
 
 const _fetchSkills = dispatch => {
     return async () => {
-        var allSkills = [];
-        await db.collection("skills").get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                //console.log(`${doc.id} => ${doc.data()}`);
-                //console.log(`${doc.data().name}`);
-                var singleObj = {};
-                singleObj['id'] = doc.id;
-                singleObj['name'] = doc.data().name;
-                allSkills.push(singleObj);
-            });
-          }).catch(function(error) {
-            console.error("Error adding document: ", error);
-          });
-        dispatch({ type: 'add_allSkills', payload: allSkills });
+        //var allSkills = await do_fetchSkills();
+        //var allSkills = [{'id': 'basket', 'name': 'basket'}, {'id': 'football', 'name': 'football'}];
+        await do_fetchSkills((type, payload) => {
+            dispatch({ type, payload });
+        });
+    };
+};
+
+const _persistProfile = dispatch => {
+    return async (state) => {
+        do_persistProfile(state);
+    };
+};
+
+const _persistEditedProfile = dispatch => {
+    return async (state, addedSkills, removedSkills, addedWishes, removedWishes) => {
+        do_persistEditedProfile(state, addedSkills, removedSkills, addedWishes, removedWishes);
+        //dispatch({ type: 'add_skills', payload: addedSkills });
+        dispatch({ type: 'add_wishes', payload: addedWishes });
+    };
+};
+
+const _editSkills = dispatch => {
+    return ( skills ) => {
+        dispatch({ type: 'edit_skills', payload: skills });
+    };
+};
+
+const _editWishes = dispatch => {
+    return ( wishes ) => {
+        dispatch({ type: 'edit_wishes', payload: wishes });
+    };
+};
+
+const _fetchPotentialMatches = dispatch => {
+    return async () => {
+        await do_fetchPotentialMatches((type, payload) => {
+            dispatch({ type, payload });
+        });
     };
 };
 
 export const { Provider, Context } = createDataContext(
     profileReducer,
-    { _setFirstName, _setBirthday, _setGender, _addSkills, _addWishes, _fetchSkills },
-    { firstName: '', birthday: '', gender: '', skills: [], wishes: [], allSkills: [] }
+    { _setUserId, _setFirstName, _setBirthday, _setGender, _addSkills, _addWishes, _fetchSkills, _persistProfile, 
+        _editSkills, _editWishes, _persistEditedProfile, _fetchPotentialMatches },
+    { userId: null, firstName: '', birthday: '', gender: '', skills: [], wishes: [], allSkills: [], potentialMatches: [] }
 );

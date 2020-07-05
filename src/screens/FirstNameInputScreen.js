@@ -5,10 +5,9 @@ import { Context as ProfileContext } from '../context/ProfileContext';
 
 import Spacer from '../components/Spacer';
 
-const FirstNameInputScreen = () => {
-    const { _setFirstName } = useContext(ProfileContext);
+const FirstNameInputScreen = ({ navigation }) => {
+    const { _setFirstName, _setUserId } = useContext(ProfileContext);
     const [firstName, setFirstName] = useState('');
-
     return (
         <View style={styles.container}>
             <Spacer>
@@ -22,7 +21,10 @@ const FirstNameInputScreen = () => {
                 />
             </Spacer>
             <Spacer>
-                <Button title="CONTINUE" onPress={() => _setFirstName(firstName)}/>
+                <Button title="CONTINUE" onPress={() => {
+                    _setFirstName(firstName);
+                    _setUserId(navigation.getParam('userId'));
+                    }}/>
             </Spacer>
         </View>
     );

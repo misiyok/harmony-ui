@@ -6,7 +6,7 @@ import { Context as ProfileContext } from '../context/ProfileContext';
 import Spacer from '../components/Spacer';
 
 const WishesInputScreen = () => {
-    const { state, _addWishes } = useContext(ProfileContext);
+    const { state, _addWishes, _persistProfile } = useContext(ProfileContext);
     const [wishes, setWishes] = useState([]);
 
     return (
@@ -32,6 +32,7 @@ const WishesInputScreen = () => {
             <Spacer>
                 <Button title="CONTINUE" onPress={() => {
                     _addWishes( wishes );
+                    _persistProfile( { ...state, wishes } ); // fix it with a nice solution
                 }}/>
             </Spacer>
         </View>
