@@ -56,7 +56,7 @@ validatePhoneNumber = (phoneNumber) => {
 };
 
 const sendCode = dispatch => {
-    return ({ phoneNumber }) => {
+    return (phoneNumber) => {
         if(validatePhoneNumber(phoneNumber)){
             dispatch({ type: 'set_show_modal', payload: true });
         } else {
