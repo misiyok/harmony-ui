@@ -8,8 +8,17 @@ const LandingScreen = ({ navigation }) => {
     const {state, tryLocalSignin} = useContext(AuthContext);
 
     useEffect(() => {
-        tryLocalSignin();
-    }, []);
+        if (!state.userId){
+            const subscriber = tryLocalSignin();
+            return subscriber;
+        } else if (state.userId){
+            navigation.navigate(state.isNewUser ? 'FirstNameInput' : 'Match', {userId: state.userId});
+        }
+    }, [state.userId]);
+
+    if (state.initializing) {
+        return null;
+    }
 
     return (
         <View style={styles.container} >

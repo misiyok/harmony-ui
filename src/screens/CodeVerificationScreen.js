@@ -6,7 +6,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 import Spacer from '../components/Spacer';
 
 const CodeVerificationScreen = ({ navigation }) => {
-    const {state, setErrorMessage, signin} = useContext(AuthContext);
+    const {state, setErrorMessage, setIsNewUser} = useContext(AuthContext);
     const [verificationCode, setVerificationCode] = useState('');
 
     return (
@@ -27,20 +27,19 @@ const CodeVerificationScreen = ({ navigation }) => {
             {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
             <Spacer>
                 <Button title="CONTINUE" onPress={ () => {
-                        state.confirmation.confirm(verificationCode)
-                        .then((userCredential) => {
-                            signin({ userId: userCredential.user.userId });
-                            if(userCredential.additionalUserInfo.isNewUser){
-                                navigation.navigate('DummyProfileCreate');
-                            } else {
-                                navigation.navigate('Match');
-                            }
-                        })
-                        .catch((err) => {
-                            setErrorMessage({ errorMessage: 'Confirmation: Oops! something is wrong' }); 
-                            // when this is set. onWillBlur doesnt clear the errorMessage at every case. (check it)
-                        });
-                    } } />
+                    state.confirmation.confirm(verificationCode)
+                    .then((userCredential) => {
+                        setIsNewUser({ isNewUser: userCredential.additionalUserInfo.isNewUser });
+                        // if (userCredential.additionalUserInfo.isNewUser)
+                        //     navigation.navigate('FirstNameInput');
+                        // else
+                        //     navigation.navigate('Match');
+                    })
+                    .catch((err) => {
+                        setErrorMessage({ errorMessage: 'Confirmation Error: ', err }); 
+                        // when this is set. onWillBlur doesnt clear the errorMessage at every case. (check it)
+                    });
+                } } />
             </Spacer>
         </View>
     );
