@@ -1,40 +1,21 @@
-import React, { useState, useEffect, useContext }  from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { Text, Input, Button, ListItem } from 'react-native-elements';
+import React, { useContext }  from 'react';
+import { View, StyleSheet } from 'react-native';
 import { Context as ProfileContext } from '../context/ProfileContext';
-
-import Spacer from '../components/Spacer';
+import SkillsForm from '../components/SkillsForm';
 
 const WishesInputScreen = () => {
     const { state, _setWishes, _persistProfile } = useContext(ProfileContext);
-    const [wishes, setWishes] = useState([]);
-
     return (
         <View style={styles.container}>
-            <Spacer>
-                <Text h3>My wishes are</Text>
-            </Spacer>
-
-            <FlatList
-                    data={state.allSkills}
-                    keyExtractor={item => item.id}
-                    renderItem={({ item }) => {
-                        return (
-                            <TouchableOpacity
-                                onPress={() => setWishes([...wishes, item]) }
-                            >
-                                <ListItem chevron title={item.name} />
-                            </TouchableOpacity>
-                        );
-                    }}
-                />
-
-            <Spacer>
-                <Button title="CONTINUE" onPress={() => {
+            <SkillsForm
+                headerText="My wishes are"
+                submitButtonText="CONTINUE"
+                onSubmit={(wishes) => {
                     _setWishes( wishes );
                     _persistProfile( { ...state, wishes } ); // fix it with a nice solution
-                }}/>
-            </Spacer>
+                }}
+                allSkills={state.allSkills}
+            />
         </View>
     );
 };
