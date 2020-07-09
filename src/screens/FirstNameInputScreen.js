@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, Input, Button } from 'react-native-elements';
 import { Context as ProfileContext } from '../context/ProfileContext';
@@ -6,8 +6,13 @@ import { Context as ProfileContext } from '../context/ProfileContext';
 import Spacer from '../components/Spacer';
 
 const FirstNameInputScreen = ({ navigation }) => {
-    const { _setFirstName, _setUserId } = useContext(ProfileContext);
+    const { _setFirstName, _setUserId, _fetchSkills } = useContext(ProfileContext);
     const [firstName, setFirstName] = useState('');
+
+    useEffect(() => {
+        _fetchSkills();
+    }, []);
+
     return (
         <View style={styles.container}>
             <Spacer>

@@ -4,13 +4,18 @@ import { Text, ListItem } from 'react-native-elements';
 import { Context as ProfileContext } from '../context/ProfileContext';
 import Spacer from '../components/Spacer';
 
-const MatchScreen = () => {
-    const { state, _fetchPotentialMatches } = useContext(ProfileContext);
+const MatchScreen = ({ navigation }) => {
+    const { state, _fetchPotentialMatches, _fetchUserProfileInfo } = useContext(ProfileContext);
 
-    useEffect(() => {
+    useEffect( () => {
         console.log('Match::useEffect');
+        if(navigation.getParam('userId')){
+            // having userId at navigation parameters means
+            // we navigated from Landing Screen (Profile Context is empty)
+            _fetchUserProfileInfo(navigation.getParam('userId'));
+        }
         _fetchPotentialMatches();
-    }, [state.skills, state.wishes]);
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -23,7 +28,18 @@ const MatchScreen = () => {
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => {
                         return (
-                            <ListItem chevron title={item.name} />
+                            <View>
+                                <ListItem chevron title={item.name} />
+                                <FlatList
+                                    data={item.skills}
+                                    keyExtractor={item => item.id}
+                                    renderItem={({ item }) => {
+                                        return (
+                                            <ListItem title={item.name} />
+                                        );
+                                    }}
+                                />
+                            </View>
                         );
                     }}
                 />

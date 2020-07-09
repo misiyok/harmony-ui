@@ -12,7 +12,11 @@ const LandingScreen = ({ navigation }) => {
             const subscriber = tryLocalSignin();
             return subscriber;
         } else if (state.userId){
-            navigation.navigate(state.isNewUser ? 'FirstNameInput' : 'Match', {userId: state.userId});
+            if (state.isNewUser){
+                navigation.navigate('FirstNameInput', {userId: state.userId});
+            } else {
+                navigation.navigate('Match', {userId: state.userId});
+            }
         }
     }, [state.userId]);
 

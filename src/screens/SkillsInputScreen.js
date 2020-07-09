@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext }  from 'react';
+import React, { useState, useContext }  from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Text, Input, Button, ListItem } from 'react-native-elements';
 import { Context as ProfileContext } from '../context/ProfileContext';
@@ -6,12 +6,8 @@ import { Context as ProfileContext } from '../context/ProfileContext';
 import Spacer from '../components/Spacer';
 
 const SkillsInputScreen = () => {
-    const { state, _addSkills, _fetchSkills } = useContext(ProfileContext);
+    const { state, _setSkills } = useContext(ProfileContext);
     const [skills, setSkills] = useState([]);
-
-    useEffect(() => {
-        _fetchSkills();
-    }, []);
 
     return (
         <View style={styles.container}>
@@ -35,7 +31,7 @@ const SkillsInputScreen = () => {
 
             <Spacer>
                 <Button title="CONTINUE" onPress={() => {
-                    _addSkills( skills );
+                    _setSkills( skills );
                 }}/>
             </Spacer>
         </View>

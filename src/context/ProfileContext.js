@@ -3,7 +3,8 @@ import createDataContext from './createDataContext';
 
 import { navigate } from '../navigationRef';
 
-import { do_fetchSkills, do_persistProfile, do_persistEditedProfile, do_fetchPotentialMatches } from '../firebase';
+import { do_fetchSkills, do_persistProfile, do_persistEditedProfile, 
+    do_fetchPotentialMatches, do_fetchUserProfileInfo } from '../firebase';
 
 const profileReducer = (state, action) => {
     switch(action.type) {
@@ -15,10 +16,10 @@ const profileReducer = (state, action) => {
             return { ...state, birthday: action.payload};
         case 'set_gender':
             return { ...state, gender: action.payload};
-        case 'add_skills':
-            return { ...state, skills: [...state.skills, ...action.payload]};
-        case 'add_wishes':
-            return { ...state, wishes: [...state.wishes, ...action.payload]};
+        case 'set_skills':
+            return { ...state, skills: [...action.payload]};
+        case 'set_wishes':
+            return { ...state, wishes: [...action.payload]};
         case 'add_allSkills':
             return { ...state, allSkills: [...action.payload]};
         case 'edit_skills':
@@ -59,16 +60,16 @@ const _setGender = dispatch => {
     };
 };
 
-const _addSkills = dispatch => {
+const _setSkills = dispatch => {
     return ( skills ) => {
-        dispatch({ type: 'add_skills', payload: skills });
+        dispatch({ type: 'set_skills', payload: skills });
         navigate('WishesInput');
     };
 };
 
-const _addWishes = dispatch => {
+const _setWishes = dispatch => {
     return ( wishes ) => {
-        dispatch({ type: 'add_wishes', payload: wishes });
+        dispatch({ type: 'set_wishes', payload: wishes });
         navigate('Match');
     };
 };
@@ -93,7 +94,7 @@ const _persistEditedProfile = dispatch => {
     return async (state, addedSkills, removedSkills, addedWishes, removedWishes) => {
         do_persistEditedProfile(state, addedSkills, removedSkills, addedWishes, removedWishes);
         //dispatch({ type: 'add_skills', payload: addedSkills });
-        dispatch({ type: 'add_wishes', payload: addedWishes });
+        //dispatch({ type: 'add_wishes', payload: addedWishes });
     };
 };
 
@@ -117,9 +118,17 @@ const _fetchPotentialMatches = dispatch => {
     };
 };
 
+const _fetchUserProfileInfo = dispatch => {
+    return async (userId) => {
+        await do_fetchUserProfileInfo(userId, (type, payload) => {
+            dispatch({ type, payload });
+        });
+    };
+};
+
 export const { Provider, Context } = createDataContext(
     profileReducer,
-    { _setUserId, _setFirstName, _setBirthday, _setGender, _addSkills, _addWishes, _fetchSkills, _persistProfile, 
-        _editSkills, _editWishes, _persistEditedProfile, _fetchPotentialMatches },
+    { _setUserId, _setFirstName, _setBirthday, _setGender, _setSkills, _setWishes, _fetchSkills, _persistProfile, 
+        _editSkills, _editWishes, _persistEditedProfile, _fetchPotentialMatches, _fetchUserProfileInfo },
     { userId: null, firstName: '', birthday: '', gender: '', skills: [], wishes: [], allSkills: [], potentialMatches: [] }
 );
