@@ -20,6 +20,7 @@ export const do_fetchSkills = async (callback) => {
             var singleObj = {};
             singleObj['id'] = doc.id;
             singleObj['name'] = doc.data().name;
+            singleObj['category'] = doc.data().category;
             allSkills.push(singleObj);
         });
       }).catch(function(error) {

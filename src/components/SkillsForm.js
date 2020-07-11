@@ -27,8 +27,8 @@ const SkillsForm = ({ headerText, onSubmit, submitButtonText, allSkills, selecte
                             <TouchableOpacity
                                 onPress={() => setSkills([...skills, item]) }
                             >
-                                { skills.includes(item) ? <ListItem chevron title={item.name} checkmark /> :
-                                <ListItem chevron title={item.name} checkBox /> }
+                                { skills.includes(item) ? <ListItem chevron title={`${item.name} - (${item.category})`} checkmark /> :
+                                <ListItem chevron title={`${item.name} - (${item.category})`} checkBox /> }
                                 
                             </TouchableOpacity>
                         );

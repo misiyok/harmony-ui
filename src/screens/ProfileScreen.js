@@ -54,10 +54,6 @@ const ProfileScreen = () => {
             </Spacer>
             <Spacer>
                 <Text h4>Skills</Text>
-                <Button title="EDIT SKILLS" onPress={() => {
-                    // open Skills Form
-                    setModalVisible(true);
-                }}/>
             </Spacer>
             <FlatList
                 data={state.skills}
@@ -68,6 +64,11 @@ const ProfileScreen = () => {
                     );
                 }}
             />
+            <Button title="EDIT SKILLS" onPress={() => {
+                // open Skills Form
+                setModalVisible(true);
+            }}/>
+
             <Spacer>
                 <Text h4>Wishes</Text>
             </Spacer>
@@ -80,9 +81,6 @@ const ProfileScreen = () => {
                     );
                 }}
             />
-            <Spacer>
-                <Button title="SET EDITED TO TRUE" onPress={() => setEdited(true)}/>
-            </Spacer>
             {renderSkillsForm()}
         </View>
     );
