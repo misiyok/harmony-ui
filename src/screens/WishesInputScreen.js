@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { Context as ProfileContext } from '../context/ProfileContext';
 import SkillsForm from '../components/SkillsForm';
 
-const WishesInputScreen = () => {
+const WishesInputScreen = ({ navigation }) => {
     const { state, _setWishes, _persistProfile } = useContext(ProfileContext);
     return (
         <View style={styles.container}>
@@ -13,6 +13,7 @@ const WishesInputScreen = () => {
                 onSubmit={(wishes) => {
                     _setWishes( wishes );
                     _persistProfile( { ...state, wishes } ); // fix it with a nice solution
+                    navigation.navigate('Match');
                 }}
                 allSkills={state.allSkills}
             />

@@ -63,14 +63,12 @@ const _setGender = dispatch => {
 const _setSkills = dispatch => {
     return ( skills ) => {
         dispatch({ type: 'set_skills', payload: skills });
-        navigate('WishesInput');
     };
 };
 
 const _setWishes = dispatch => {
     return ( wishes ) => {
         dispatch({ type: 'set_wishes', payload: wishes });
-        navigate('Match');
     };
 };
 

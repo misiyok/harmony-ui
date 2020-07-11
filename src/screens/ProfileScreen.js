@@ -1,23 +1,46 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet, FlatList, Button } from 'react-native';
+import { View, StyleSheet, FlatList, Button, Modal } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
 import { Text, ListItem } from 'react-native-elements';
 import { Context as ProfileContext } from '../context/ProfileContext';
 import Spacer from '../components/Spacer';
+import SkillsForm  from '../components/SkillsForm';
 
 const ProfileScreen = () => {
-    const { state, _persistEditedProfile } = useContext(ProfileContext);
-    const [edited, setEdited] = useState(false);
+    const { state, _setSkills, _persistProfile } = useContext(ProfileContext);
+    const [ modalVisible, setModalVisible] = useState(false);
+    const [ edited, setEdited ] = useState(false);
+
+    renderSkillsForm = () => {
+        return (
+            <View style={{ marginTop: 100 }}>
+                <Modal
+                    visible={ modalVisible }
+                    onRequestClose={() => setModalVisible(false)}
+                >
+                    <SkillsForm
+                        headerText="Add/Remove Skills"
+                        allSkills={state.allSkills}
+                        submitButtonText="DONE"
+                        selectedSkills={state.skills}
+                        onSubmit={(skills) => {
+                            setModalVisible(false);
+                            if (skills != state.skills){
+                                setEdited(true);
+                            }
+                            _setSkills(skills);
+                        }}
+                    />
+                </Modal>
+            </View>
+        )
+    }
 
     return (
         <View style={styles.container}>
             <NavigationEvents onWillBlur={() => {
                 if(edited){
-                    const addedSkills = [{'id': 'yoga', 'name': 'Yoga'}];
-                    const removedSkills = [{'id': 'football', 'name': 'Football'}];
-                    const addedWishes = [{'id': 'painting', 'name': 'painting'}];
-                    const removedWishes = [];
-                    _persistEditedProfile(state, addedSkills, removedSkills, addedWishes, removedWishes);
+                    _persistProfile(state);
                     setEdited(false);
                 }
             }} />
@@ -29,18 +52,22 @@ const ProfileScreen = () => {
                 <Text>{state.birthday}</Text>
                 <Text>{state.gender}</Text>
             </Spacer>
-                <Text h4>Skills</Text>
             <Spacer>
-                <FlatList
-                    data={state.skills}
-                    keyExtractor={item => item.id}
-                    renderItem={({ item }) => {
+                <Text h4>Skills</Text>
+                <Button title="EDIT SKILLS" onPress={() => {
+                    // open Skills Form
+                    setModalVisible(true);
+                }}/>
+            </Spacer>
+            <FlatList
+                data={state.skills}
+                keyExtractor={item => item.id}
+                renderItem={({ item }) => {
                     return (
                         <ListItem chevron title={item.name} />
                     );
-                    }}
-                />
-            </Spacer>
+                }}
+            />
             <Spacer>
                 <Text h4>Wishes</Text>
             </Spacer>
@@ -48,14 +75,15 @@ const ProfileScreen = () => {
                 data={state.wishes}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => {
-                return (
-                    <ListItem chevron title={item.name} />
-                );
+                    return (
+                        <ListItem chevron title={item.name} />
+                    );
                 }}
             />
             <Spacer>
                 <Button title="SET EDITED TO TRUE" onPress={() => setEdited(true)}/>
             </Spacer>
+            {renderSkillsForm()}
         </View>
     );
 };

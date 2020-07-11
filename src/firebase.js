@@ -39,57 +39,9 @@ export const do_persistProfile = async (state) => {
         wishes: state.wishes
     })
     .then(() => {
-        console.log('User added!', state.userId);
+        console.log('User added/Updated!', state.userId);
     }).catch(function(error) {
         console.error("Error adding user document: ", error);
-    });
-};
-
-export const do_persistEditedProfile = async (state, addedSkills, removedSkills, addedWishes, removedWishes) => {
-    var userDocRef = db.collection('users').doc(state.userId);
-
-    addedSkills.forEach(element => {
-        userDocRef.collection('skills')
-        .doc(element.id)
-        .set(element)
-        .then(function() {
-            console.log("Document written");
-        }).catch(function(error) {
-            console.error("Error adding document: ", error);
-        });
-    });
-    
-    removedSkills.forEach(element => {
-        userDocRef.collection('skills')
-        .doc(element.id)
-        .delete()
-        .then(function() {
-            console.log("Document deleted");
-        }).catch(function(error) {
-            console.error("Error deleting document: ", error);
-        });
-    });
-
-    addedWishes.forEach(element => {
-        userDocRef.collection('wishes')
-        .doc(element.id)
-        .set(element)
-        .then(function(docRef) {
-            console.log("Document written");
-        }).catch(function(error) {
-            console.error("Error adding document: ", error);
-        }); 
-    });
-
-    removedWishes.forEach(element => {
-        userDocRef.collection('wishes')
-        .doc(element.id)
-        .delete()
-        .then(function() {
-            console.log("Document deleted");
-        }).catch(function(error) {
-            console.error("Error deleting document: ", error);
-        }); 
     });
 };
 
