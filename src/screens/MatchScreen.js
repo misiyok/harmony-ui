@@ -11,11 +11,11 @@ const MatchScreen = ({ navigation }) => {
         console.warn('Match::useEffect');
         if(navigation.getParam('userId')){
             // having userId at navigation parameters means
-            // we navigated from Landing Screen (Profile Context is empty)
+            // we navigated directly from Landing Screen (Profile Context is empty)
             _fetchUserProfileInfo(navigation.getParam('userId'));
             _fetchAllSkills();
         }
-        _fetchPotentialMatches();
+        _fetchPotentialMatches(state);
     }, []);
 
     return (

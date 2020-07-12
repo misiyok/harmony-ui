@@ -107,8 +107,8 @@ const _editWishes = dispatch => {
 };
 
 const _fetchPotentialMatches = dispatch => {
-    return async () => {
-        await do_fetchPotentialMatches((type, payload) => {
+    return async (state) => {
+        await do_fetchPotentialMatches(state, (type, payload) => {
             dispatch({ type, payload });
         });
     };

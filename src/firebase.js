@@ -67,16 +67,16 @@ const getAllUsers = async (allUsers) => {
     });
 };
 
-export const do_fetchPotentialMatches = async (callback) => {
+export const do_fetchPotentialMatches = async (state, callback) => {
     //var potentialMatches = [];
     var allUsers = [];
     await getAllUsers(allUsers);
-    
+
     // filter allUsers array and exclude:
     // own profile
+    // profiles with non-matching skills and wishes
     // liked users
     // disliked users
-    // profiles with non-matching skills and wishes
 
     callback('add_potentialMatches', allUsers );
 };

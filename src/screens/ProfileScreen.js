@@ -26,6 +26,8 @@ const ProfileScreen = () => {
                         onSubmit={(skills) => {
                             setModalVisible(false);
                             if (skills != state.skills){
+                                // this comparison doesnt work
+                                // refactor it
                                 setEdited(true);
                             }
                             _setSkills(skills);
