@@ -13,7 +13,7 @@ if (!global.atob) { global.atob = decode }
 
 const db = firebase.firestore();
 
-export const do_fetchSkills = async (callback) => {
+export const do_fetchAllSkills = async (callback) => {
     var allSkills = [];
     await db.collection("skills").get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -72,6 +72,12 @@ export const do_fetchPotentialMatches = async (callback) => {
     var allUsers = [];
     await getAllUsers(allUsers);
     
+    // filter allUsers array and exclude:
+    // own profile
+    // liked users
+    // disliked users
+    // profiles with non-matching skills and wishes
+
     callback('add_potentialMatches', allUsers );
 };
 

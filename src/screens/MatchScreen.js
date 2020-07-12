@@ -5,14 +5,15 @@ import { Context as ProfileContext } from '../context/ProfileContext';
 import Spacer from '../components/Spacer';
 
 const MatchScreen = ({ navigation }) => {
-    const { state, _fetchPotentialMatches, _fetchUserProfileInfo } = useContext(ProfileContext);
+    const { state, _fetchPotentialMatches, _fetchUserProfileInfo, _fetchAllSkills } = useContext(ProfileContext);
 
     useEffect( () => {
-        console.log('Match::useEffect');
+        console.warn('Match::useEffect');
         if(navigation.getParam('userId')){
             // having userId at navigation parameters means
             // we navigated from Landing Screen (Profile Context is empty)
             _fetchUserProfileInfo(navigation.getParam('userId'));
+            _fetchAllSkills();
         }
         _fetchPotentialMatches();
     }, []);

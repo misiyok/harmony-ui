@@ -5,13 +5,7 @@ import Spacer from '../components/Spacer';
 
 
 const SkillsForm = ({ headerText, onSubmit, submitButtonText, allSkills, selectedSkills }) => {
-    const [skills, setSkills] = useState([]);
-
-    useEffect(() => {
-        if(selectedSkills){
-            setSkills(selectedSkills);
-        }
-    }, []);
+    const [skills, setSkills] = useState([...selectedSkills]);
 
     return (
         <View>
@@ -27,8 +21,9 @@ const SkillsForm = ({ headerText, onSubmit, submitButtonText, allSkills, selecte
                             <TouchableOpacity
                                 onPress={() => setSkills([...skills, item]) }
                             >
-                                { skills.includes(item) ? <ListItem chevron title={`${item.name} - (${item.category})`} checkmark /> :
-                                <ListItem chevron title={`${item.name} - (${item.category})`} checkBox /> }
+                                { skills.filter((element) => { return (element.id === item.id) }).length > 0 ? 
+                                <ListItem chevron title={`${item.name} - (${item.category})`} checkmark /> 
+                                : <ListItem chevron title={`${item.name} - (${item.category})`} /> }
                                 
                             </TouchableOpacity>
                         );

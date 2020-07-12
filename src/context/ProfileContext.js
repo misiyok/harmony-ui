@@ -3,7 +3,7 @@ import createDataContext from './createDataContext';
 
 import { navigate } from '../navigationRef';
 
-import { do_fetchSkills, do_persistProfile, do_persistEditedProfile, 
+import { do_fetchAllSkills, do_persistProfile, do_persistEditedProfile, 
     do_fetchPotentialMatches, do_fetchUserProfileInfo } from '../firebase';
 
 const profileReducer = (state, action) => {
@@ -72,11 +72,9 @@ const _setWishes = dispatch => {
     };
 };
 
-const _fetchSkills = dispatch => {
+const _fetchAllSkills = dispatch => {
     return async () => {
-        //var allSkills = await do_fetchSkills();
-        //var allSkills = [{'id': 'basket', 'name': 'basket'}, {'id': 'football', 'name': 'football'}];
-        await do_fetchSkills((type, payload) => {
+        await do_fetchAllSkills((type, payload) => {
             dispatch({ type, payload });
         });
     };
@@ -126,7 +124,7 @@ const _fetchUserProfileInfo = dispatch => {
 
 export const { Provider, Context } = createDataContext(
     profileReducer,
-    { _setUserId, _setFirstName, _setBirthday, _setGender, _setSkills, _setWishes, _fetchSkills, _persistProfile, 
+    { _setUserId, _setFirstName, _setBirthday, _setGender, _setSkills, _setWishes, _fetchAllSkills, _persistProfile, 
         _editSkills, _editWishes, _persistEditedProfile, _fetchPotentialMatches, _fetchUserProfileInfo },
     { userId: null, firstName: '', birthday: '', gender: '', skills: [], wishes: [], allSkills: [], potentialMatches: [] }
 );

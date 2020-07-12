@@ -6,11 +6,11 @@ import { Context as ProfileContext } from '../context/ProfileContext';
 import Spacer from '../components/Spacer';
 
 const FirstNameInputScreen = ({ navigation }) => {
-    const { _setFirstName, _setUserId, _fetchSkills } = useContext(ProfileContext);
+    const { _setFirstName, _setUserId, _fetchAllSkills } = useContext(ProfileContext);
     const [firstName, setFirstName] = useState('');
 
     useEffect(() => {
-        _fetchSkills();
+        _fetchAllSkills();
     }, []);
 
     return (
