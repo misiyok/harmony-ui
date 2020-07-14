@@ -7,7 +7,7 @@ import Spacer from '../components/Spacer';
 import SkillsForm  from '../components/SkillsForm';
 
 const ProfileScreen = () => {
-    const { state, _setSkills, _persistProfile } = useContext(ProfileContext);
+    const { state, _setSkills, _persistProfile, _fetchPotentialMatches } = useContext(ProfileContext);
     const [ modalVisible, setModalVisible] = useState(false);
     const [ edited, setEdited ] = useState(false);
 
@@ -25,12 +25,12 @@ const ProfileScreen = () => {
                         selectedSkills={state.skills}
                         onSubmit={(skills) => {
                             setModalVisible(false);
-                            if (skills != state.skills){
-                                // this comparison doesnt work
-                                // refactor it
+                            // check this comparison, it may be not the best solution to understand if edited
+                            mySkills = state.skills.map(s => s.id);
+                            if (skills.map(s => s.id).filter( n => { return mySkills.indexOf(n) !== -1; }).length != skills.length) {
                                 setEdited(true);
+                                _setSkills(skills);
                             }
-                            _setSkills(skills);
                         }}
                     />
                 </Modal>
@@ -44,6 +44,9 @@ const ProfileScreen = () => {
                 if(edited){
                     _persistProfile(state);
                     setEdited(false);
+                    // here if the changing info is the profile photo
+                    // then we shouldnt call this again
+                    _fetchPotentialMatches(state);
                 }
             }} />
             <Spacer>

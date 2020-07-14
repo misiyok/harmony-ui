@@ -67,28 +67,67 @@ const getAllUsers = async (allUsers) => {
     });
 };
 
+const getIntersection = (a1, a2) => {
+    return a1.filter( n => { return a2.indexOf(n) !== -1; });
+};
+
 export const do_fetchPotentialMatches = async (state, callback) => {
-    //var potentialMatches = [];
+    // var potentialMatches = [    {  'userProfile': {'id': 'id1', 'name': 'Muhammed', 'skills': [{'id': 'football', 'name': 'Football', 'category': 'Sports'}] },
+    //                                 'matchingSkills': [{'id': '1', 'name': '1', 'category': 'Sports'}],
+    //                                 'matchingWishes': [{'id': '2', 'name': '2', 'category': 'Sports'}] 
+    //                             },
+    //                             {   'userProfile': {'id': 'id2', 'name': 'Muhammed2', 'skills': [{'id': 'basketball', 'name': 'Basketball', 'category': 'Sports'}, {'id': 'painting', 'name': 'Painting', 'category': 'Art'}] },
+    //                                 'matchingSkills': [{'id': '3', 'name': '3', 'category': 'Sports'}],
+    //                                 'matchingWishes': [{'id': '4', 'name': '4', 'category': 'Sports'}] 
+    //                             }
+    //                         ];
+
     var allUsers = [];
     await getAllUsers(allUsers);
 
-    // filter allUsers array and exclude:
-    // own profile
-    // profiles with non-matching skills and wishes
+    var potentialMatches = [];
+
+    mySkills = state.skills.map(skill => skill.id);
+    myWishes = state.wishes.map(skill => skill.id);
+
+    potentialMatches = allUsers
+                        .map((user) => {
+                            var singleObj = {};
+                            singleObj['userProfile'] = user;
+                            singleObj['matchingSkills'] = [];
+                            singleObj['matchingWishes'] = [];
+                            return singleObj;
+                        })
+                        .filter((userObj) => {
+                                userSkills = userObj.userProfile.skills.map(skill => skill.id);
+                                userWishes = userObj.userProfile.wishes.map(skill => skill.id);
+                                
+                                userObj.matchingSkills = getIntersection(mySkills, userWishes);
+                                userObj.matchingWishes = getIntersection(myWishes, userSkills);
+                                
+                                return  ((userObj.userProfile.id != state.userId) 
+                                        && ( userObj.matchingSkills.length > 0 ) 
+                                        && ( userObj.matchingWishes.length > 0 ) 
+                                );
+                            });
+
     // liked users
     // disliked users
 
-    callback('add_potentialMatches', allUsers );
+    callback('add_potentialMatches', potentialMatches );
 };
 
 export const do_fetchUserProfileInfo = async (userId, callback) => {
     await db.collection("users").doc(userId).get().then((doc) => {
-        callback('set_user_id', doc.id );
-        callback('set_first_name', doc.data().name );
-        callback('set_birthday', doc.data().birthday );
-        callback('set_gender', doc.data().gender );
-        callback('set_skills', doc.data().skills );
-        callback('set_wishes', doc.data().wishes );
+        callback('set_profile', { id: doc.id, name: doc.data().name,
+            gender: doc.data().gender, birthday: doc.data().birthday, 
+            skills: [...doc.data().skills], wishes: [...doc.data().wishes] } );
+        // callback('set_user_id', doc.id );
+        // callback('set_first_name', doc.data().name );
+        // callback('set_birthday', doc.data().birthday );
+        // callback('set_gender', doc.data().gender );
+        // callback('set_skills', doc.data().skills );
+        // callback('set_wishes', doc.data().wishes );
     })
     .catch(function(error) {
         console.error("Error getting users collection: ", error);

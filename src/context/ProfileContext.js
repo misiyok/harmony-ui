@@ -28,6 +28,13 @@ const profileReducer = (state, action) => {
             return { ...state, wishes: [...action.payload]};
         case 'add_potentialMatches':
             return { ...state, potentialMatches: [...action.payload]};
+        case 'set_profile':
+            return { ...state, userId: action.payload.id, firstName: action.payload.name,
+                gender: action.payload.gender, birthday: action.payload.birthday, 
+                skills: [...action.payload.skills], wishes: [...action.payload.wishes] };
+        case 'clean_state':
+            return { userId: null, firstName: '', birthday: '', gender: '', skills: [], 
+                    wishes: [], allSkills: [], potentialMatches: [] };
         default:
             return state;
     }
@@ -122,9 +129,16 @@ const _fetchUserProfileInfo = dispatch => {
     };
 };
 
+const _cleanState = dispatch => {
+    return () => {
+        dispatch({ type: 'clean_state', payload: null });
+    };
+};
+
+
 export const { Provider, Context } = createDataContext(
     profileReducer,
     { _setUserId, _setFirstName, _setBirthday, _setGender, _setSkills, _setWishes, _fetchAllSkills, _persistProfile, 
-        _editSkills, _editWishes, _persistEditedProfile, _fetchPotentialMatches, _fetchUserProfileInfo },
+        _editSkills, _editWishes, _persistEditedProfile, _fetchPotentialMatches, _fetchUserProfileInfo, _cleanState },
     { userId: null, firstName: '', birthday: '', gender: '', skills: [], wishes: [], allSkills: [], potentialMatches: [] }
 );

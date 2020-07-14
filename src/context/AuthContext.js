@@ -30,7 +30,7 @@ const authReducer = (state, action) => {
         case 'signin':
             return { ...state, userId: action.payload };
         case 'signout':
-            return { ...state, userId: null, counter: state.counter + 1 };
+            return { ...state, userId: null };
         case 'set_isNewUser':
             return { ...state, isNewUser: action.payload };
         case 'set_initializing':
