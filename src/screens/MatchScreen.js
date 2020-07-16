@@ -1,22 +1,14 @@
 import React, { useContext, useEffect } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList, Button } from 'react-native';
 import { Text, ListItem } from 'react-native-elements';
 import { Context as ProfileContext } from '../context/ProfileContext';
 import Spacer from '../components/Spacer';
 
 const MatchScreen = ({ navigation }) => {
-    const { state, _fetchPotentialMatches, _fetchUserProfileInfo, _fetchAllSkills } = useContext(ProfileContext);
+    const { state, _fetchPotentialMatches, _fetchUserProfileInfo, _fetchAllSkills, _like, _dislike } = useContext(ProfileContext);
 
     useEffect(() => {
         const fetchData = async () => {
-            // if(navigation.getParam('userId')){
-            //     // having userId at navigation parameters means
-            //     // we navigated directly from Landing Screen (Profile Context is empty)
-                
-            //     await _fetchUserProfileInfo(navigation.getParam('userId'));
-            //     _fetchAllSkills();
-            //     _fetchPotentialMatches(state);
-            // }
             if (!state.userId){
                 await _fetchUserProfileInfo(navigation.getParam('userId'));
                 _fetchAllSkills();
@@ -24,7 +16,6 @@ const MatchScreen = ({ navigation }) => {
                 _fetchPotentialMatches(state);
             }
         }
-
         fetchData();
     }, [state.userId]);
 
@@ -46,7 +37,7 @@ const MatchScreen = ({ navigation }) => {
                         return (
                             <View style={{
                                 borderBottomWidth: 1,
-                                borderBottomColor: 'black',
+                                borderBottomColor: 'black'
                                 }}
                             >
                                 <ListItem chevron title={item.userProfile.name} />
@@ -72,6 +63,16 @@ const MatchScreen = ({ navigation }) => {
                                             );
                                         }}
                                 />
+                                <Button title="Like" onPress={() => {
+                                    _like({id: state.userId, name: state.firstName}, 
+                                        {'id':item.userProfile.id, 'name': item.userProfile.name});
+                                }}/>
+                                <Spacer />
+                                <Button title="Dislike" onPress={() => {
+                                    _dislike({id: state.userId, name: state.firstName}, 
+                                        {'id':item.userProfile.id, 'name': item.userProfile.name});
+                                }}/>
+                                <Spacer />
                             </View>
                         );
                     }}

@@ -4,7 +4,7 @@ import createDataContext from './createDataContext';
 import { navigate } from '../navigationRef';
 
 import { do_fetchAllSkills, do_persistProfile, do_persistEditedProfile, 
-    do_fetchPotentialMatches, do_fetchUserProfileInfo } from '../firebase';
+    do_fetchPotentialMatches, do_fetchUserProfileInfo, do_like, do_dislike } from '../firebase';
 
 const profileReducer = (state, action) => {
     switch(action.type) {
@@ -31,10 +31,18 @@ const profileReducer = (state, action) => {
         case 'set_profile':
             return { ...state, userId: action.payload.id, firstName: action.payload.name,
                 gender: action.payload.gender, birthday: action.payload.birthday, 
-                skills: [...action.payload.skills], wishes: [...action.payload.wishes] };
+                skills: [...action.payload.skills], wishes: [...action.payload.wishes],
+                likes: [...action.payload.likes], dislikes: [...action.payload.dislikes],
+                mutualLikes: [...action.payload.mutualLikes] };
         case 'clean_state':
             return { userId: null, firstName: '', birthday: '', gender: '', skills: [], 
                     wishes: [], allSkills: [], potentialMatches: [] };
+        case 'like':
+            return { ...state, likes: [...state.likes, action.payload]};
+        case 'dislike':
+            return { ...state, dislikes: [...state.dislikes, action.payload]};
+        case 'mutual_like':
+            return { ...state, mutualLikes: [...state.mutualLikes, action.payload]};
         default:
             return state;
     }
@@ -96,8 +104,6 @@ const _persistProfile = dispatch => {
 const _persistEditedProfile = dispatch => {
     return async (state, addedSkills, removedSkills, addedWishes, removedWishes) => {
         do_persistEditedProfile(state, addedSkills, removedSkills, addedWishes, removedWishes);
-        //dispatch({ type: 'add_skills', payload: addedSkills });
-        //dispatch({ type: 'add_wishes', payload: addedWishes });
     };
 };
 
@@ -135,10 +141,28 @@ const _cleanState = dispatch => {
     };
 };
 
+const _like = dispatch => {
+    return async (user, likedUser) => {
+        await do_like(user, likedUser, (type, payload) => {
+            dispatch({ type, payload });
+        });
+    };
+};
+
+const _dislike = dispatch => {
+    return async (user, likedUser) => {
+        await do_dislike(user, likedUser, (type, payload) => {
+            dispatch({ type, payload });
+        });
+    };
+};
+
 
 export const { Provider, Context } = createDataContext(
     profileReducer,
     { _setUserId, _setFirstName, _setBirthday, _setGender, _setSkills, _setWishes, _fetchAllSkills, _persistProfile, 
-        _editSkills, _editWishes, _persistEditedProfile, _fetchPotentialMatches, _fetchUserProfileInfo, _cleanState },
-    { userId: null, firstName: '', birthday: '', gender: '', skills: [], wishes: [], allSkills: [], potentialMatches: [] }
+        _editSkills, _editWishes, _persistEditedProfile, _fetchPotentialMatches, _fetchUserProfileInfo, _cleanState,
+        _like, _dislike },
+    { userId: null, firstName: '', birthday: '', gender: '', skills: [], wishes: [], allSkills: [], potentialMatches: [],
+        likes: [], dislikes: [], mutualLikes: [] }
 );

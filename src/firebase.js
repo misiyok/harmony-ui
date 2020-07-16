@@ -37,7 +37,10 @@ export const do_persistProfile = async (state) => {
         birthday: state.birthday,
         gender: state.gender,
         skills: state.skills,
-        wishes: state.wishes
+        wishes: state.wishes,
+        likes: [],
+        dislikes: [],
+        mutualLikes: []
     })
     .then(() => {
         console.log('User added/Updated!', state.userId);
@@ -57,6 +60,9 @@ const getAllUsers = async (allUsers) => {
                 singleObj['gender'] = doc.data().gender;
                 singleObj['skills'] = doc.data().skills;
                 singleObj['wishes'] = doc.data().wishes;
+                singleObj['likes'] = doc.data().likes;
+                singleObj['dislikes'] = doc.data().dislikes;
+                singleObj['mutualLikes'] = doc.data().mutualLikes;
                 allUsers.push(singleObj);
             } catch (err) {
                 console.warn(err);
@@ -81,7 +87,6 @@ export const do_fetchPotentialMatches = async (state, callback) => {
     //                                 'matchingWishes': [{'id': '4', 'name': '4', 'category': 'Sports'}] 
     //                             }
     //                         ];
-
     var allUsers = [];
     await getAllUsers(allUsers);
 
@@ -89,6 +94,10 @@ export const do_fetchPotentialMatches = async (state, callback) => {
 
     mySkills = state.skills.map(skill => skill.id);
     myWishes = state.wishes.map(skill => skill.id);
+
+    myLikes = state.likes.map(like => like.id);
+    myDislikes = state.dislikes.map(dislike => dislike.id);
+    myMutualLikes = state.mutualLikes.map(mutualLike => mutualLike.id);
 
     potentialMatches = allUsers
                         .map((user) => {
@@ -99,6 +108,16 @@ export const do_fetchPotentialMatches = async (state, callback) => {
                             return singleObj;
                         })
                         .filter((userObj) => {
+                                // filter my profile
+                                if(userObj.userProfile.id == state.userId) {
+                                    return false;
+                                }
+
+                                //filter liked, disliked and mutual liked profiles
+                                if ([...myLikes, ...myDislikes, ...myMutualLikes].includes(userObj.userProfile.id)){
+                                    return false;
+                                }
+
                                 userSkills = userObj.userProfile.skills.map(skill => skill.id);
                                 userWishes = userObj.userProfile.wishes.map(skill => skill.id);
                                 
@@ -111,9 +130,6 @@ export const do_fetchPotentialMatches = async (state, callback) => {
                                 );
                             });
 
-    // liked users
-    // disliked users
-
     callback('add_potentialMatches', potentialMatches );
 };
 
@@ -121,15 +137,76 @@ export const do_fetchUserProfileInfo = async (userId, callback) => {
     await db.collection("users").doc(userId).get().then((doc) => {
         callback('set_profile', { id: doc.id, name: doc.data().name,
             gender: doc.data().gender, birthday: doc.data().birthday, 
-            skills: [...doc.data().skills], wishes: [...doc.data().wishes] } );
-        // callback('set_user_id', doc.id );
-        // callback('set_first_name', doc.data().name );
-        // callback('set_birthday', doc.data().birthday );
-        // callback('set_gender', doc.data().gender );
-        // callback('set_skills', doc.data().skills );
-        // callback('set_wishes', doc.data().wishes );
+            skills: [...doc.data().skills], wishes: [...doc.data().wishes],
+            likes: [...doc.data().likes], dislikes: [...doc.data().dislikes],
+            mutualLikes: [...doc.data().mutualLikes] } );
     })
     .catch(function(error) {
         console.error("Error getting users collection: ", error);
+    });
+};
+
+export const do_like = async (user, likedUser, callback) => {
+    // firebase -> retrieve likedUser
+    db.collection('users')
+    .doc(likedUser.id)
+    .get()
+    .then((likedUserDoc) => {
+        // check likedUser's likes 
+        likedUsersFilteredList = likedUserDoc.data().likes ? 
+            likedUserDoc.data().likes.filter(usr => { return usr.id == user.id; }) : [];
+        if(likedUsersFilteredList.length > 0){ // if userId exists
+            // firebase -> remove from there
+            // firebase -> add it to its ML list
+            db.collection('users')
+            .doc(likedUser.id)
+            .update({
+                likes: firebase.firestore.FieldValue.arrayRemove(user),
+                mutualLikes: firebase.firestore.FieldValue.arrayUnion(user)
+            })
+            .then(() => {
+            }).catch(function(error) {
+                console.error("Error deleting user from liked users likes list", error);
+            });
+            
+            // firebase -> add likedUser to my ML list
+            db.collection('users')
+            .doc(user.id)
+            .update({
+                mutualLikes: firebase.firestore.FieldValue.arrayUnion(likedUser)
+            })
+            .then(() => {
+                callback('mutual_like', likedUser);
+            }).catch(function(error) {
+                console.error("Error adding liked user to mutual likes list", error);
+            });
+        } else { // if doesnt exist
+            // firebase -> add likedUSer to my likes list
+            db.collection('users')
+            .doc(user.id)
+            .update({
+                likes: firebase.firestore.FieldValue.arrayUnion(likedUser)
+            })
+            .then(() => {
+                callback('like', likedUser);
+            }).catch(function(error) {
+                console.error("Error adding user to likes list", error);
+            });
+        }
+    }).catch(function(error) {
+        console.error("Error getting liked user document: ", error);
+    });
+};
+
+export const do_dislike = async (user, dislikedUser, callback) => {
+    db.collection('users')
+    .doc(user.id)
+    .update({
+        dislikes: firebase.firestore.FieldValue.arrayUnion(dislikedUser)
+    })
+    .then(() => {
+        callback('dislike', dislikedUser);
+    }).catch(function(error) {
+        console.error("Error adding likes to user document: ", error);
     });
 };
