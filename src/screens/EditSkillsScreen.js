@@ -15,10 +15,15 @@ import SkillsForm from '../components/SkillsForm';
 import Header from '../components/Header';
 import ContinueButton from '../components/ContinueButton';
 import { moderateScale, scale } from 'react-native-size-matters';
-const SkillsInputScreen = ({ navigation }) => {
+const EditSkillsScreen = ({
+  onSubmit,
+  previousSkills = [],
+  cancelSubmit,
+  title = 'My skills are',
+}) => {
   const { state, _setSkills } = useContext(ProfileContext);
   const [skillsArray, setskillsArray] = useState(null);
-  const [selectedSkills, setselectedSkills] = useState([]);
+  const [selectedSkills, setselectedSkills] = useState([...previousSkills]);
   useEffect(() => {
     arrangeSkillTable();
   }, []);
@@ -61,74 +66,7 @@ const SkillsInputScreen = ({ navigation }) => {
         skills: [],
       },
     ];
-    // const data = [
-    //   {
-    //     id: '1',
-    //     name: 'Acoustic Guitar',
-    //     category: 'Music',
-    //     uri: 'https://via.placeholder.com/150',
-    //   },
-    //   {
-    //     id: '2',
-    //     name: 'Freelancing',
-    //     category: 'Art & Entertainment',
-    //     uri: 'https://via.placeholder.com/150',
-    //   },
-    //   {
-    //     id: '3',
-    //     name: 'Violin',
-    //     category: 'Industry',
-    //     uri: 'https://via.placeholder.com/150',
-    //   },
-    //   {
-    //     id: '4',
-    //     name: 'Cello',
-    //     category: 'Music',
-    //     uri: 'https://via.placeholder.com/150',
-    //   },
-    //   {
-    //     id: '5',
-    //     name: 'Electric Guitar',
-    //     category: 'Music',
-    //     uri: 'https://via.placeholder.com/150',
-    //   },
-    //   {
-    //     id: '6',
-    //     name: 'Drum',
-    //     category: 'Music',
-    //     uri: 'https://via.placeholder.com/150',
-    //   },
-    //   {
-    //     id: '7',
-    //     name: 'Saxophone',
-    //     category: 'Music',
-    //     uri: 'https://via.placeholder.com/150',
-    //   },
-    //   {
-    //     id: '8',
-    //     name: 'Flute',
-    //     category: 'Music',
-    //     uri: 'https://via.placeholder.com/150',
-    //   },
-    //   {
-    //     id: '9',
-    //     name: 'Clarinet',
-    //     category: 'Music',
-    //     uri: 'https://via.placeholder.com/150',
-    //   },
-    //   {
-    //     id: '10',
-    //     name: 'Badminton',
-    //     category: 'Sports',
-    //     uri: 'https://via.placeholder.com/150',
-    //   },
-    //   {
-    //     id: '11',
-    //     name: 'Field Hockey',
-    //     category: 'Sports',
-    //     uri: 'https://via.placeholder.com/150',
-    //   },
-    // ];
+
     const data = state.allSkills;
     console.log('skills data', data);
     data.map((skill) => {
@@ -174,7 +112,7 @@ const SkillsInputScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="My skills are" onPress={() => navigation.goBack()} />
+      <Header title={title} onPress={() => cancelSubmit()} />
       {/* <View style={styles.titleView}>
         <Text style={styles.title}>My skills are</Text>
       </View> */}
@@ -227,7 +165,7 @@ const SkillsInputScreen = ({ navigation }) => {
                           marginVertical: 10,
                         }}
                       >
-                        {skillRow.map((item) => {
+                        {skillRow.map((item, index) => {
                           return (
                             <TouchableOpacity
                               style={{
@@ -235,7 +173,7 @@ const SkillsInputScreen = ({ navigation }) => {
                                 width: scale(60),
                                 marginHorizontal: 5,
                               }}
-                              key={item.id}
+                              key={index.toString()}
                               onPress={() => {
                                 changeSelectedSkills(item);
                               }}
@@ -319,9 +257,11 @@ const SkillsInputScreen = ({ navigation }) => {
         <Flatlist d /> */}
       </ScrollView>
       <ContinueButton
+        title="SUBMIT"
         onPress={() => {
-          _setSkills(selectedSkills);
-          navigation.navigate('WishesInput');
+          // _setSkills(selectedSkills);
+          onSubmit(selectedSkills);
+          // navigation.navigate('WishesInput');
         }}
       />
     </SafeAreaView>
@@ -377,4 +317,4 @@ const styles = ScaledSheet.create({
   },
 });
 
-export default SkillsInputScreen;
+export default EditSkillsScreen;
